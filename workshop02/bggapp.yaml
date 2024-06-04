@@ -36,7 +36,7 @@ spec:
     spec:
       containers:
         - name: bggapp-container
-          image: stackupiss/bgg-backend:v1
+          image: stackupiss/bgg-backend:v2
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
@@ -62,11 +62,11 @@ metadata:
     app: bgg
     name: bggapp-svc
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
     app: bgg
     name: bggapp-po
   ports:
     - name: bggapp-svc-port
-      port: 8080
+      port: 80
       targetPort: bggapp-port
