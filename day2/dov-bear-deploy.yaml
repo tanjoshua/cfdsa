@@ -1,0 +1,37 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dov-deploy
+  # generateName: dov-deploy # used with k create to create multiple instances
+  namespace: myns
+  labels:
+    app: dov
+    name: dov-deploy
+spec:
+  replicas: 4
+  selector:
+    matchLabels: # pods that belong to this deployment has these labels
+      app: dov
+      name: dov-po
+  template:
+    metadata:
+      name: dov-po
+      namespace: myns
+      labels:
+        app: dov
+        name: dov-po
+    spec:
+      containers:
+        - name: dov-container
+          image: chukmunnlee/dov-bear:v5
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: INSTANCE_NAME
+              value: my-first-deployment
+            - name: INSTANCE_HASH
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          ports:
+            - containerPort: 3000
