@@ -55,6 +55,13 @@ spec:
           volumeMounts:
             - name: cs-vol
               mountPath: /config/workspace
+          resources: 
+            requests:
+              cpu: 20m
+              memory: 50Mi
+            limits:
+              cpu: 20m
+              memory: 50Mi
 ---
 apiVersion: v1
 kind: Service

@@ -64,7 +64,7 @@ metadata:
     app: api
     name: api-ing
   annotations:
-    nginx.ingress.kubernetes.io/rewrite: $2
+    nginx.ingress.kubernetes.io/rewrite: /$2
 
 spec:
   ingressClassName: nginx
