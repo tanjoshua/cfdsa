@@ -1,0 +1,97 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: myns
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dov-cm
+  namespace: myns
+  labels:
+    app: dov
+    name: dov-cm
+data:
+  INSTANCE_NAME: name from configmap
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dov-secret
+  namespace: myns
+  labels:
+    app: dov
+    name: dov-secret
+type: Opaque
+data:
+  INSTANCE_HASH: dGhpcyBpcyBteSBzZWNyZXQ=
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dov-deploy
+  # generateName: dov-deploy # used with k create to create multiple instances
+  namespace: myns
+  labels:
+    app: dov
+    name: dov-deploy
+spec:
+  replicas: 4
+  selector:
+    matchLabels: # pods that belong to this deployment has these labels
+      app: dov
+      name: dov-po
+  template:
+    metadata:
+      name: dov-po
+      namespace: myns
+      labels:
+        app: dov
+        name: dov-po
+    spec:
+      volumes:
+        - name: cm-vol
+          configMap:
+            name: dov-cm
+        - name: secret-vol
+          secret:
+            secretName: dov-secret
+      containers:
+        - name: dov-container
+          image: chukmunnlee/dov-bear:v5
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: dov-cm
+            - secretRef:
+                name: dov-secret
+          ports:
+            - name: dov-port
+              containerPort: 3000
+          volumeMounts:
+            - name: cm-vol
+              mountPath: /opt/configmap
+            - name: secret-vol
+              mountPath: /opt/secrets
+              readOnly: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dov-svc
+  namespace: myns
+  labels:
+    app: dov
+    name: dov-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: dov
+    name: dov-po
+  ports:
+    - name: dov-svc-port
+      port: 8080
+      targetPort: dov-port

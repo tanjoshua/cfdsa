@@ -1,0 +1,33 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: csns
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cs-cm
+  namespace: csns
+  labels:
+    app: cs
+    name: cs-cm
+data:
+  TZ: Asia/Singapore
+  DEFAULT_WORKSPACE: /config/workspace
+  PROXY_DOMAIN: code-104.248.98.107.nip.io
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cs-secret
+  namespace: csns
+  labels:
+    app: cs
+    name: cs-secret
+type: Opaque
+data:
+  PASSWORD: cGFzc3dvcmQ=
+  SUDO_PASSWORD: cGFzc3dvcmQ=
+---
+
